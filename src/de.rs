@@ -514,3 +514,85 @@ where
         reader: Cursor::new(slice),
     })
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_bool() {
+        assert_eq!(false, from_slice(&[0]).unwrap());
+        assert_eq!(true, from_slice(&[1]).unwrap());
+    }
+
+    #[test]
+    fn test_signed() {
+        assert_eq!(1i8, from_slice(&[1]).unwrap());
+        assert_eq!(513i16, from_slice(&[1, 2]).unwrap());
+        assert_eq!(67305985i32, from_slice(&[1, 2, 3, 4]).unwrap());
+        assert_eq!(
+            578437695752307201i64,
+            from_slice(&[1, 2, 3, 4, 5, 6, 7, 8]).unwrap()
+        );
+    }
+
+    #[test]
+    fn test_unsigned() {
+        assert_eq!(1u8, from_slice(&[1]).unwrap());
+        assert_eq!(513u16, from_slice(&[1, 2]).unwrap());
+        assert_eq!(67305985u32, from_slice(&[1, 2, 3, 4]).unwrap());
+        assert_eq!(
+            578437695752307201u64,
+            from_slice(&[1, 2, 3, 4, 5, 6, 7, 8]).unwrap()
+        );
+    }
+
+    #[test]
+    fn test_float() {
+        assert_eq!(1.0f32, from_slice(&1.0f32.to_le_bytes()).unwrap());
+        assert!(from_slice::<f32>(&f32::NAN.to_le_bytes()).unwrap().is_nan());
+        assert_eq!(
+            f32::INFINITY,
+            from_slice(&f32::INFINITY.to_le_bytes()).unwrap()
+        );
+        assert_eq!(
+            f32::NEG_INFINITY,
+            from_slice(&f32::NEG_INFINITY.to_le_bytes()).unwrap()
+        );
+        assert_eq!(1.0f64, from_slice(&1.0f64.to_le_bytes()).unwrap());
+        assert!(from_slice::<f64>(&f64::NAN.to_le_bytes()).unwrap().is_nan());
+        assert_eq!(
+            f64::INFINITY,
+            from_slice(&f64::INFINITY.to_le_bytes()).unwrap()
+        );
+        assert_eq!(
+            f64::NEG_INFINITY,
+            from_slice(&f64::NEG_INFINITY.to_le_bytes()).unwrap()
+        );
+    }
+
+    #[test]
+    fn test_string() {
+        assert_eq!(
+            "hello",
+            from_slice::<String>(&[5, 0, 0, 0, b'h', b'e', b'l', b'l', b'o']).unwrap()
+        )
+    }
+
+    #[test]
+    fn test_data() {
+        assert_eq!(
+            &[1u8, 2, 3, 4, 5][..],
+            &*from_slice::<Vec<u8>>(&[5, 0, 0, 0, 1, 2, 3, 4, 5]).unwrap()
+        )
+    }
+
+    #[test]
+    fn test_optional() {
+        assert_eq!(None, from_slice::<Option<u32>>(&[0]).unwrap());
+        assert_eq!(
+            Some(67305985u32),
+            from_slice::<Option<u32>>(&[1, 1, 2, 3, 4]).unwrap()
+        );
+    }
+}
