@@ -293,11 +293,11 @@ where
     }
 
     /// BARE type: \[len\]T
-    fn deserialize_tuple<V>(self, _len: usize, visitor: V) -> Result<V::Value, Self::Error>
+    fn deserialize_tuple<V>(self, len: usize, visitor: V) -> Result<V::Value, Self::Error>
     where
         V: de::Visitor<'de>,
     {
-        struct Seq<'a, R>(&'a mut Deserializer<R>);
+        struct Seq<'a, R>(&'a mut Deserializer<R>, usize);
         impl<'de, 'a, R> de::SeqAccess<'de> for Seq<'a, R>
         where
             R: Read,
@@ -308,10 +308,15 @@ where
             where
                 T: de::DeserializeSeed<'de>,
             {
-                Ok(Some(seed.deserialize(&mut *self.0)?))
+                if self.1 == 0 {
+                    Ok(None)
+                } else {
+                    self.1 -= 1;
+                    Ok(Some(seed.deserialize(&mut *self.0)?))
+                }
             }
         }
-        visitor.visit_seq(Seq::<'a, R>(self))
+        visitor.visit_seq(Seq::<'a, R>(self, len))
     }
 
     /// BARE type: struct
