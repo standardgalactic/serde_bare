@@ -131,7 +131,7 @@ where
     }
 
     /// BARE type: string
-    /// Restriction: len < u32::MAX
+    /// Restriction: len < u32::MAX, or Error::LengthOverflow is returned.
     fn serialize_str(self, v: &str) -> Result<Self::Ok, Self::Error> {
         let len: u32 = v.len().try_into().map_err(|_| Error::LengthOverflow)?;
         self.serialize_u32(len)?;
@@ -142,7 +142,7 @@ where
     }
 
     /// BARE type: data
-    /// Restriction: len < u32::MAX
+    /// Restriction: len < u32::MAX, or Error::LengthOverflow is returned.
     fn serialize_bytes(self, v: &[u8]) -> Result<Self::Ok, Self::Error> {
         let len: u32 = v.len().try_into().map_err(|_| Error::LengthOverflow)?;
         self.serialize_u32(len)?;
@@ -196,7 +196,7 @@ where
         value.serialize(self)
     }
 
-    /// BARE type: { u32, T }
+    /// BARE type: { u32, struct }
     fn serialize_newtype_variant<T: ?Sized>(
         self,
         _name: &'static str,

@@ -423,27 +423,29 @@ where
             R: Read,
         {
             type Error = Error;
-            type Variant = Variant<'a, R>;
+            type Variant = Self;
 
             fn variant_seed<V>(self, seed: V) -> Result<(V::Value, Self::Variant), Self::Error>
             where
                 V: de::DeserializeSeed<'de>,
             {
                 let val = seed.deserialize(&mut *self.0)?;
-                Ok((val, Variant(self.0)))
+                Ok((val, self))
             }
         }
-        struct Variant<'a, R>(&'a mut Deserializer<R>);
-        impl<'de, 'a, R> de::VariantAccess<'de> for Variant<'a, R>
+
+        impl<'de, 'a, R> de::VariantAccess<'de> for Enum<'a, R>
         where
             R: Read,
         {
             type Error = Error;
 
+            /// Unserialized type.
             fn unit_variant(self) -> Result<(), Self::Error> {
                 Ok(())
             }
 
+            /// Bare type: T
             fn newtype_variant_seed<T>(self, seed: T) -> Result<T::Value, Self::Error>
             where
                 T: de::DeserializeSeed<'de>,
@@ -451,6 +453,7 @@ where
                 seed.deserialize(self.0)
             }
 
+            /// Bare type: struct
             fn tuple_variant<V>(self, len: usize, visitor: V) -> Result<V::Value, Self::Error>
             where
                 V: de::Visitor<'de>,
@@ -458,6 +461,7 @@ where
                 de::Deserializer::deserialize_tuple(self.0, len, visitor)
             }
 
+            /// Bare type: struct
             fn struct_variant<V>(
                 self,
                 fields: &'static [&'static str],
@@ -488,6 +492,7 @@ where
         Err(Error::AnyUnsupported)
     }
 
+    /// Returns false.
     fn is_human_readable(&self) -> bool {
         false
     }
