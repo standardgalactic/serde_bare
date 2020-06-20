@@ -78,6 +78,16 @@ where
         visitor.visit_i64(i64::from_le_bytes(buf))
     }
 
+    serde::serde_if_integer128! {
+        /// Returns Error::I128Unsupported.
+        fn deserialize_i128<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: de::Visitor<'de>
+        {
+            Err(Error::I128Unsupported)
+        }
+    }
+
     /// BARE type: u8
     fn deserialize_u8<V>(self, visitor: V) -> Result<V::Value, Self::Error>
     where
@@ -116,6 +126,16 @@ where
         let mut buf = [0u8; 8];
         self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
         visitor.visit_u64(u64::from_le_bytes(buf))
+    }
+
+    serde::serde_if_integer128! {
+        /// Returns Error::U128Unsupported.
+        fn deserialize_u128<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: de::Visitor<'de>
+        {
+            Err(Error::U128Unsupported)
+        }
     }
 
     /// BARE type: f32

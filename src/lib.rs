@@ -2,12 +2,7 @@
 //!```text
 //! serde_bare
 //!
-//! An incomplete implementation of the BARE (https://git.sr.ht/~sircmpwn/bare) encoding format.
-//!
-//! Missing types:
-//!     - i128 (in Serde's data model, not in BARE)
-//!     - u128 (in Serde's data model, not in BARE)
-//!     - tagged unions (in BARE, not immediately clear how to integrate with Serde's data model)
+//! An implementation of the BARE (https://git.sr.ht/~sircmpwn/bare) encoding format draft.
 //!```
 
 pub mod de;

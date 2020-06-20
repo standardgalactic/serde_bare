@@ -63,6 +63,13 @@ where
         Ok(())
     }
 
+    serde::serde_if_integer128! {
+        /// Returns Error::I128Unsupported.
+        fn serialize_i128(self, _v: i128) -> Result<Self::Ok, Self::Error> {
+            Err(Error::I128Unsupported)
+        }
+    }
+
     /// BARE type: u8
     fn serialize_u8(self, v: u8) -> Result<Self::Ok, Self::Error> {
         self.writer
@@ -93,6 +100,13 @@ where
             .write_all(&v.to_le_bytes())
             .map_err(|e| Error::Io(e))?;
         Ok(())
+    }
+
+    serde::serde_if_integer128! {
+        /// Returns Error::U128Unsupported.
+        fn serialize_u128(self, _v: u128) -> Result<Self::Ok, Self::Error> {
+            Err(Error::U128Unsupported)
+        }
     }
 
     /// BARE type: f32
