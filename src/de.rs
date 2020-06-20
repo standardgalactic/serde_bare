@@ -35,7 +35,11 @@ where
     where
         V: de::Visitor<'de>,
     {
-        self.deserialize_u8(visitor)
+        match <u8 as de::Deserialize>::deserialize(self)? {
+            0 => visitor.visit_bool(false),
+            1 => visitor.visit_bool(true),
+            _ => Err(Error::InvalidBool),
+        }
     }
 
     /// BARE type: i8
