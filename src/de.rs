@@ -175,11 +175,7 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let length = {
-            let mut buf = [0u8; 4];
-            self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
-            u32::from_le_bytes(buf) as usize
-        };
+        let length = <u32 as de::Deserialize>::deserialize(&mut *self)? as usize;
         let mut buf = Vec::with_capacity(length);
         buf.resize(length, 0);
         self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
@@ -192,11 +188,7 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let length = {
-            let mut buf = [0u8; 4];
-            self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
-            u32::from_le_bytes(buf) as usize
-        };
+        let length = <u32 as de::Deserialize>::deserialize(&mut *self)? as usize;
         let mut buf = Vec::with_capacity(length);
         buf.resize(length, 0);
         self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
@@ -209,11 +201,7 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let length = {
-            let mut buf = [0u8; 4];
-            self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
-            u32::from_le_bytes(buf) as usize
-        };
+        let length = <u32 as de::Deserialize>::deserialize(&mut *self)? as usize;
         let mut buf = Vec::with_capacity(length);
         buf.resize(length, 0);
         self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
@@ -225,11 +213,7 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let length = {
-            let mut buf = [0u8; 4];
-            self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
-            u32::from_le_bytes(buf) as usize
-        };
+        let length = <u32 as de::Deserialize>::deserialize(&mut *self)? as usize;
         let mut buf = Vec::with_capacity(length);
         buf.resize(length, 0);
         self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
@@ -241,19 +225,10 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let is_present = {
-            let mut buf = [0u8; 1];
-            self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
-            match buf[0] {
-                0 => false,
-                1 => true,
-                _ => return Err(Error::InvalidBool),
-            }
-        };
-        if !is_present {
-            visitor.visit_none()
-        } else {
+        if <bool as de::Deserialize>::deserialize(&mut *self)? {
             visitor.visit_some(self)
+        } else {
+            visitor.visit_none()
         }
     }
 
@@ -294,11 +269,7 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let length = {
-            let mut buf = [0u8; 4];
-            self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
-            u32::from_le_bytes(buf)
-        };
+        let length = <u32 as de::Deserialize>::deserialize(&mut *self)?;
         struct Seq<'a, R>(&'a mut Deserializer<R>, u32);
         impl<'de, 'a, R> de::SeqAccess<'de> for Seq<'a, R>
         where
@@ -375,11 +346,7 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let length = {
-            let mut buf = [0u8; 4];
-            self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
-            u32::from_le_bytes(buf)
-        };
+        let length = <u32 as de::Deserialize>::deserialize(&mut *self)?;
 
         struct Map<'a, R>(&'a mut Deserializer<R>, u32);
         impl<'de, 'a, R> de::MapAccess<'de> for Map<'a, R>
