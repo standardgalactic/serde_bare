@@ -1,0 +1,15 @@
+serde_bare
+
+An incomplete implementation of the BARE (https://git.sr.ht/~sircmpwn/bare) encoding format.
+
+Missing types:
+    - f16 (in BARE, not in Serde's data model)
+    - i128 (in Serde's data model, not in BARE)
+    - u128 (in Serde's data model, not in BARE)
+    - tagged unions (in BARE, not immediately clear how to integrate with Serde's data model)
+
+Licensed under either of Apache License, Version 2.0 or MIT license at your option.
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in this crate by you, as defined in the Apache-2.0 license, shall
+be dual licensed as above, without any additional terms or conditions.

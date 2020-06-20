@@ -1,0 +1,13 @@
+[package]
+name = "serde_bare"
+version = "0.1.0"
+authors = ["Tadeo Kondrak <me@tadeo.ca>"]
+license = "MIT OR Apache-2.0"
+edition = "2018"
+description = "An incomplete implementation of the BARE (https://git.sr.ht/~sircmpwn/bare) encoding format."
+repository = "https://git.sr.ht/~tdeo/serde_bare"
+keywords = ["serde", "bare"]
+categories = ["encoding"]
+
+[dependencies]
+serde = "1.0"
