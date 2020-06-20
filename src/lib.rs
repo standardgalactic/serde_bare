@@ -5,7 +5,6 @@
 //! An incomplete implementation of the BARE (https://git.sr.ht/~sircmpwn/bare) encoding format.
 //!
 //! Missing types:
-//!     - f16 (in BARE, not in Serde's data model)
 //!     - i128 (in Serde's data model, not in BARE)
 //!     - u128 (in Serde's data model, not in BARE)
 //!     - tagged unions (in BARE, not immediately clear how to integrate with Serde's data model)
