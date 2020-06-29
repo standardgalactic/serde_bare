@@ -1,4 +1,4 @@
-use crate::error::Error;
+use crate::{error::Error, Uint};
 use serde::de;
 use std::{
     convert::TryInto,
@@ -180,7 +180,8 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let length = <u32 as de::Deserialize>::deserialize(&mut *self)? as usize;
+        let Uint(length) = <Uint as de::Deserialize>::deserialize(&mut *self)?;
+        let length = length as usize;
         let mut buf = Vec::with_capacity(length);
         buf.resize(length, 0);
         self.reader.read_exact(&mut buf).map_err(Error::Io)?;
@@ -193,7 +194,8 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let length = <u32 as de::Deserialize>::deserialize(&mut *self)? as usize;
+        let Uint(length) = <Uint as de::Deserialize>::deserialize(&mut *self)?;
+        let length = length as usize;
         let mut buf = Vec::with_capacity(length);
         buf.resize(length, 0);
         self.reader.read_exact(&mut buf).map_err(Error::Io)?;
@@ -206,7 +208,8 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let length = <u32 as de::Deserialize>::deserialize(&mut *self)? as usize;
+        let Uint(length) = <Uint as de::Deserialize>::deserialize(&mut *self)?;
+        let length = length as usize;
         let mut buf = Vec::with_capacity(length);
         buf.resize(length, 0);
         self.reader.read_exact(&mut buf).map_err(Error::Io)?;
@@ -218,7 +221,8 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let length = <u32 as de::Deserialize>::deserialize(&mut *self)? as usize;
+        let Uint(length) = <Uint as de::Deserialize>::deserialize(&mut *self)?;
+        let length = length as usize;
         let mut buf = Vec::with_capacity(length);
         buf.resize(length, 0);
         self.reader.read_exact(&mut buf).map_err(Error::Io)?;
@@ -274,8 +278,9 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let length = <u32 as de::Deserialize>::deserialize(&mut *self)?;
-        struct Seq<'a, R>(&'a mut Deserializer<R>, u32);
+        let Uint(length) = <Uint as de::Deserialize>::deserialize(&mut *self)?;
+
+        struct Seq<'a, R>(&'a mut Deserializer<R>, u64);
         impl<'de, 'a, R> de::SeqAccess<'de> for Seq<'a, R>
         where
             R: Read,
@@ -364,9 +369,9 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let length = <u32 as de::Deserialize>::deserialize(&mut *self)?;
+        let Uint(length) = <Uint as de::Deserialize>::deserialize(&mut *self)?;
 
-        struct Map<'a, R>(&'a mut Deserializer<R>, u32);
+        struct Map<'a, R>(&'a mut Deserializer<R>, u64);
         impl<'de, 'a, R> de::MapAccess<'de> for Map<'a, R>
         where
             R: Read,
@@ -596,7 +601,7 @@ mod test {
     fn test_string() {
         assert_eq!(
             "hello",
-            from_slice::<String>(&[5, 0, 0, 0, b'h', b'e', b'l', b'l', b'o']).unwrap()
+            from_slice::<String>(&[5, b'h', b'e', b'l', b'l', b'o']).unwrap()
         )
     }
 
@@ -604,7 +609,7 @@ mod test {
     fn test_data() {
         assert_eq!(
             &[1u8, 2, 3, 4, 5][..],
-            &*from_slice::<Vec<u8>>(&[5, 0, 0, 0, 1, 2, 3, 4, 5]).unwrap()
+            &*from_slice::<Vec<u8>>(&[5, 1, 2, 3, 4, 5]).unwrap()
         )
     }
 
