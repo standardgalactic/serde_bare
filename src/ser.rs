@@ -33,33 +33,25 @@ where
 
     /// BARE type: i8
     fn serialize_i8(self, v: i8) -> Result<Self::Ok, Self::Error> {
-        self.writer
-            .write_all(&v.to_le_bytes())
-            .map_err(|e| Error::Io(e))?;
+        self.writer.write_all(&v.to_le_bytes()).map_err(Error::Io)?;
         Ok(())
     }
 
     /// BARE type: i16
     fn serialize_i16(self, v: i16) -> Result<Self::Ok, Self::Error> {
-        self.writer
-            .write_all(&v.to_le_bytes())
-            .map_err(|e| Error::Io(e))?;
+        self.writer.write_all(&v.to_le_bytes()).map_err(Error::Io)?;
         Ok(())
     }
 
     /// BARE type: i32
     fn serialize_i32(self, v: i32) -> Result<Self::Ok, Self::Error> {
-        self.writer
-            .write_all(&v.to_le_bytes())
-            .map_err(|e| Error::Io(e))?;
+        self.writer.write_all(&v.to_le_bytes()).map_err(Error::Io)?;
         Ok(())
     }
 
     /// BARE type: i64
     fn serialize_i64(self, v: i64) -> Result<Self::Ok, Self::Error> {
-        self.writer
-            .write_all(&v.to_le_bytes())
-            .map_err(|e| Error::Io(e))?;
+        self.writer.write_all(&v.to_le_bytes()).map_err(Error::Io)?;
         Ok(())
     }
 
@@ -68,40 +60,32 @@ where
         fn serialize_i128(self, v: i128) -> Result<Self::Ok, Self::Error> {
             self.writer
                 .write_all(&v.to_le_bytes())
-                .map_err(|e| Error::Io(e))?;
+                .map_err(Error::Io)?;
             Ok(())
         }
     }
 
     /// BARE type: u8
     fn serialize_u8(self, v: u8) -> Result<Self::Ok, Self::Error> {
-        self.writer
-            .write_all(&v.to_le_bytes())
-            .map_err(|e| Error::Io(e))?;
+        self.writer.write_all(&v.to_le_bytes()).map_err(Error::Io)?;
         Ok(())
     }
 
     /// BARE type: u16
     fn serialize_u16(self, v: u16) -> Result<Self::Ok, Self::Error> {
-        self.writer
-            .write_all(&v.to_le_bytes())
-            .map_err(|e| Error::Io(e))?;
+        self.writer.write_all(&v.to_le_bytes()).map_err(Error::Io)?;
         Ok(())
     }
 
     /// BARE type: u32
     fn serialize_u32(self, v: u32) -> Result<Self::Ok, Self::Error> {
-        self.writer
-            .write_all(&v.to_le_bytes())
-            .map_err(|e| Error::Io(e))?;
+        self.writer.write_all(&v.to_le_bytes()).map_err(Error::Io)?;
         Ok(())
     }
 
     /// BARE type: u64
     fn serialize_u64(self, v: u64) -> Result<Self::Ok, Self::Error> {
-        self.writer
-            .write_all(&v.to_le_bytes())
-            .map_err(|e| Error::Io(e))?;
+        self.writer.write_all(&v.to_le_bytes()).map_err(Error::Io)?;
         Ok(())
     }
 
@@ -110,24 +94,20 @@ where
         fn serialize_u128(self, v: u128) -> Result<Self::Ok, Self::Error> {
             self.writer
                 .write_all(&v.to_le_bytes())
-                .map_err(|e| Error::Io(e))?;
+                .map_err(Error::Io)?;
             Ok(())
         }
     }
 
     /// BARE type: f32
     fn serialize_f32(self, v: f32) -> Result<Self::Ok, Self::Error> {
-        self.writer
-            .write_all(&v.to_le_bytes())
-            .map_err(|e| Error::Io(e))?;
+        self.writer.write_all(&v.to_le_bytes()).map_err(Error::Io)?;
         Ok(())
     }
 
     /// BARE type: f64
     fn serialize_f64(self, v: f64) -> Result<Self::Ok, Self::Error> {
-        self.writer
-            .write_all(&v.to_le_bytes())
-            .map_err(|e| Error::Io(e))?;
+        self.writer.write_all(&v.to_le_bytes()).map_err(Error::Io)?;
         Ok(())
     }
 
@@ -141,9 +121,7 @@ where
     fn serialize_str(self, v: &str) -> Result<Self::Ok, Self::Error> {
         let len: u32 = v.len().try_into().map_err(|_| Error::LengthOverflow)?;
         self.serialize_u32(len)?;
-        self.writer
-            .write_all(v.as_bytes())
-            .map_err(|e| Error::Io(e))?;
+        self.writer.write_all(v.as_bytes()).map_err(Error::Io)?;
         Ok(())
     }
 
@@ -152,7 +130,7 @@ where
     fn serialize_bytes(self, v: &[u8]) -> Result<Self::Ok, Self::Error> {
         let len: u32 = v.len().try_into().map_err(|_| Error::LengthOverflow)?;
         self.serialize_u32(len)?;
-        self.writer.write_all(v).map_err(|e| Error::Io(e))?;
+        self.writer.write_all(v).map_err(Error::Io)?;
         Ok(())
     }
 

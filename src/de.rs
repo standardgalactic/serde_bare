@@ -47,7 +47,7 @@ where
         V: de::Visitor<'de>,
     {
         let mut buf = [0u8; 1];
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         visitor.visit_i8(i8::from_le_bytes(buf))
     }
 
@@ -57,7 +57,7 @@ where
         V: de::Visitor<'de>,
     {
         let mut buf = [0u8; 2];
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         visitor.visit_i16(i16::from_le_bytes(buf))
     }
 
@@ -67,7 +67,7 @@ where
         V: de::Visitor<'de>,
     {
         let mut buf = [0u8; 4];
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         visitor.visit_i32(i32::from_le_bytes(buf))
     }
 
@@ -77,7 +77,7 @@ where
         V: de::Visitor<'de>,
     {
         let mut buf = [0u8; 8];
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         visitor.visit_i64(i64::from_le_bytes(buf))
     }
 
@@ -88,7 +88,7 @@ where
             V: de::Visitor<'de>
         {
             let mut buf = [0u8; 16];
-            self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+            self.reader.read_exact(&mut buf).map_err(Error::Io)?;
             visitor.visit_i128(i128::from_le_bytes(buf))
         }
     }
@@ -99,7 +99,7 @@ where
         V: de::Visitor<'de>,
     {
         let mut buf = [0u8; 1];
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         visitor.visit_u8(u8::from_le_bytes(buf))
     }
 
@@ -109,7 +109,7 @@ where
         V: de::Visitor<'de>,
     {
         let mut buf = [0u8; 2];
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         visitor.visit_u16(u16::from_le_bytes(buf))
     }
 
@@ -119,7 +119,7 @@ where
         V: de::Visitor<'de>,
     {
         let mut buf = [0u8; 4];
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         visitor.visit_u32(u32::from_le_bytes(buf))
     }
 
@@ -129,7 +129,7 @@ where
         V: de::Visitor<'de>,
     {
         let mut buf = [0u8; 8];
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         visitor.visit_u64(u64::from_le_bytes(buf))
     }
 
@@ -140,7 +140,7 @@ where
             V: de::Visitor<'de>
         {
             let mut buf = [0u8; 16];
-            self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+            self.reader.read_exact(&mut buf).map_err(Error::Io)?;
             visitor.visit_u128(u128::from_le_bytes(buf))
         }
     }
@@ -151,7 +151,7 @@ where
         V: de::Visitor<'de>,
     {
         let mut buf = [0u8; 4];
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         visitor.visit_f32(f32::from_le_bytes(buf))
     }
 
@@ -161,7 +161,7 @@ where
         V: de::Visitor<'de>,
     {
         let mut buf = [0u8; 8];
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         visitor.visit_f64(f64::from_le_bytes(buf))
     }
 
@@ -181,7 +181,7 @@ where
         let length = <u32 as de::Deserialize>::deserialize(&mut *self)? as usize;
         let mut buf = Vec::with_capacity(length);
         buf.resize(length, 0);
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         let utf8 = str::from_utf8(&buf).map_err(|_| Error::InvalidUtf8)?;
         visitor.visit_str(utf8)
     }
@@ -194,7 +194,7 @@ where
         let length = <u32 as de::Deserialize>::deserialize(&mut *self)? as usize;
         let mut buf = Vec::with_capacity(length);
         buf.resize(length, 0);
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         let utf8 = String::from_utf8(buf).map_err(|_| Error::InvalidUtf8)?;
         visitor.visit_string(utf8)
     }
@@ -207,7 +207,7 @@ where
         let length = <u32 as de::Deserialize>::deserialize(&mut *self)? as usize;
         let mut buf = Vec::with_capacity(length);
         buf.resize(length, 0);
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         visitor.visit_bytes(&buf)
     }
 
@@ -219,7 +219,7 @@ where
         let length = <u32 as de::Deserialize>::deserialize(&mut *self)? as usize;
         let mut buf = Vec::with_capacity(length);
         buf.resize(length, 0);
-        self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+        self.reader.read_exact(&mut buf).map_err(Error::Io)?;
         visitor.visit_byte_buf(buf)
     }
 
