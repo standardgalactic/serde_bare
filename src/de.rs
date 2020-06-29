@@ -82,12 +82,14 @@ where
     }
 
     serde::serde_if_integer128! {
-        /// Returns Error::I128Unsupported.
-        fn deserialize_i128<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
+        /// BARE type: data<16>
+        fn deserialize_i128<V>(self, visitor: V) -> Result<V::Value, Self::Error>
         where
             V: de::Visitor<'de>
         {
-            Err(Error::I128Unsupported)
+            let mut buf = [0u8; 16];
+            self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+            visitor.visit_i128(i128::from_le_bytes(buf))
         }
     }
 
@@ -132,12 +134,14 @@ where
     }
 
     serde::serde_if_integer128! {
-        /// Returns Error::U128Unsupported.
-        fn deserialize_u128<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
+        /// BARE type: data<16>
+        fn deserialize_u128<V>(self, visitor: V) -> Result<V::Value, Self::Error>
         where
             V: de::Visitor<'de>
         {
-            Err(Error::U128Unsupported)
+            let mut buf = [0u8; 16];
+            self.reader.read_exact(&mut buf).map_err(|e| Error::Io(e))?;
+            visitor.visit_u128(u128::from_le_bytes(buf))
         }
     }
 
@@ -533,6 +537,10 @@ mod test {
             578437695752307201i64,
             from_slice(&[1, 2, 3, 4, 5, 6, 7, 8]).unwrap()
         );
+        assert_eq!(
+            21345817372864405881847059188222722561i128,
+            from_slice(&[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]).unwrap()
+        );
     }
 
     #[test]
@@ -543,6 +551,10 @@ mod test {
         assert_eq!(
             578437695752307201u64,
             from_slice(&[1, 2, 3, 4, 5, 6, 7, 8]).unwrap()
+        );
+        assert_eq!(
+            21345817372864405881847059188222722561u128,
+            from_slice(&[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]).unwrap()
         );
     }
 

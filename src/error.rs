@@ -12,8 +12,6 @@ pub enum Error {
     Io(io::Error),
 
     AnyUnsupported,
-    I128Unsupported,
-    U128Unsupported,
     IdentifierUnsupported,
 
     InvalidUtf8,
@@ -40,8 +38,6 @@ impl Display for Error {
             Error::Message(msg) => formatter.write_str(msg),
             Error::Io(e) => e.fmt(formatter),
             Error::AnyUnsupported => formatter.write_str("BARE does not support any"),
-            Error::U128Unsupported => formatter.write_str("Bare does not support u128"),
-            Error::I128Unsupported => formatter.write_str("Bare does not support i128"),
             Error::IdentifierUnsupported => formatter.write_str("BARE does not support identifier"),
             Error::InvalidUtf8 => formatter.write_str("invalid utf-8 in string"),
             Error::LengthOverflow => formatter.write_str("length above u32::MAX"),

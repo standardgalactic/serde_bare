@@ -7,6 +7,10 @@
 //!
 //! Mapped exactly.
 //!
+//! ## `u128`, `i128`
+//!
+//! Encoded in the same fashion as the other integers, but the type is data<16>.
+//!
 //! ## `[length]type`, `data<length>`
 //! Can be used as a `[T; N]` where Serde has an implementation for it, or manually with deserialize_tuple.
 //!
