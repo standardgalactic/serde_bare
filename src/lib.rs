@@ -7,10 +7,6 @@
 //!
 //! Mapped exactly.
 //!
-//! ## `e8`/`e16`/`e32`/`e64`
-//!
-//! These have the same representation as the unsigned integer types.
-//!
 //! ## `[length]type`, `data<length>`
 //! Can be used as a `[T; N]` where Serde has an implementation for it, or manually with deserialize_tuple.
 //!
