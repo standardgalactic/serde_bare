@@ -17,7 +17,6 @@ pub enum Error {
     IdentifierUnsupported,
 
     InvalidUtf8,
-    InvalidBool,
 
     LengthOverflow,
     MapLengthRequired,
@@ -45,7 +44,6 @@ impl Display for Error {
             Error::I128Unsupported => formatter.write_str("Bare does not support i128"),
             Error::IdentifierUnsupported => formatter.write_str("BARE does not support identifier"),
             Error::InvalidUtf8 => formatter.write_str("invalid utf-8 in string"),
-            Error::InvalidBool => formatter.write_str("invalid bool, neither 0 or 1"),
             Error::LengthOverflow => formatter.write_str("length above u32::MAX"),
             Error::MapLengthRequired => formatter.write_str("map length required"),
         }
