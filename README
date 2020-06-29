@@ -2,6 +2,8 @@ serde_bare
 
 An implementation of the BARE (https://git.sr.ht/~sircmpwn/bare) encoding format draft.
 
+Mailing list: https://lists.sr.ht/~tdeo/serde_bare
+
 Licensed under either of Apache License, Version 2.0 or MIT license at your option.
 
 Unless you explicitly state otherwise, any contribution intentionally submitted
