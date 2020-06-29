@@ -1,6 +1,7 @@
 use crate::error::Error;
 use serde::de;
 use std::{
+    convert::TryInto,
     i16, i32, i64, i8,
     io::{Cursor, Read},
     str, u16, u32, u64, u8,
@@ -170,7 +171,8 @@ where
     where
         V: de::Visitor<'de>,
     {
-        self.deserialize_u32(visitor)
+        let codepoint = <u32 as de::Deserialize>::deserialize(&mut *self)?;
+        visitor.visit_char(codepoint.try_into().map_err(|_| Error::InvalidChar)?)
     }
 
     /// BARE type: string
