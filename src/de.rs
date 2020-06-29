@@ -171,7 +171,7 @@ where
     where
         V: de::Visitor<'de>,
     {
-        let codepoint = <u32 as de::Deserialize>::deserialize(&mut *self)?;
+        let codepoint = <u32 as de::Deserialize>::deserialize(self)?;
         visitor.visit_char(codepoint.try_into().map_err(|_| Error::InvalidChar)?)
     }
 
@@ -229,7 +229,7 @@ where
         visitor.visit_byte_buf(buf)
     }
 
-    /// BARE type: optional<T>
+    /// BARE type: optional<type>
     fn deserialize_option<V>(self, visitor: V) -> Result<V::Value, Self::Error>
     where
         V: de::Visitor<'de>,
@@ -241,7 +241,7 @@ where
         }
     }
 
-    /// Unserialized type.
+    /// BARE type: void
     fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value, Self::Error>
     where
         V: de::Visitor<'de>,
@@ -249,7 +249,7 @@ where
         visitor.visit_unit()
     }
 
-    /// Unserialized type.
+    /// BARE type: void
     fn deserialize_unit_struct<V>(
         self,
         _name: &'static str,
@@ -261,7 +261,7 @@ where
         visitor.visit_unit()
     }
 
-    /// Unserialized type.
+    /// BARE type: void
     fn deserialize_newtype_struct<V>(
         self,
         _name: &'static str,
@@ -541,6 +541,7 @@ mod test {
     fn test_bool() {
         assert_eq!(false, from_slice(&[0]).unwrap());
         assert_eq!(true, from_slice(&[1]).unwrap());
+        assert_eq!(true, from_slice(&[2]).unwrap());
     }
 
     #[test]
@@ -619,6 +620,14 @@ mod test {
         assert_eq!(
             Some(67305985u32),
             from_slice::<Option<u32>>(&[1, 1, 2, 3, 4]).unwrap()
+        );
+    }
+
+    #[test]
+    fn test_slice() {
+        assert_eq!(
+            &[0u8; 4][..],
+            &*from_slice::<Box<[u8]>>(&[4, 0, 0, 0, 0]).unwrap()
         );
     }
 }

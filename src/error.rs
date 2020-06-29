@@ -17,7 +17,6 @@ pub enum Error {
     InvalidUtf8,
     InvalidChar,
 
-    LengthOverflow,
     MapLengthRequired,
 }
 
@@ -42,7 +41,6 @@ impl Display for Error {
             Error::IdentifierUnsupported => formatter.write_str("BARE does not support identifier"),
             Error::InvalidUtf8 => formatter.write_str("invalid utf-8 in string"),
             Error::InvalidChar => formatter.write_str("invalid unicode codepoint in char"),
-            Error::LengthOverflow => formatter.write_str("length above u32::MAX"),
             Error::MapLengthRequired => formatter.write_str("map length required"),
         }
     }
