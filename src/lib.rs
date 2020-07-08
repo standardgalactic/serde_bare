@@ -57,8 +57,8 @@ impl serde::ser::Serialize for Uint {
         i += 1;
 
         let mut s = serializer.serialize_tuple(usize::MAX)?;
-        for j in 0..i {
-            s.serialize_element(&buf[j])?;
+        for b in buf.iter().take(i) {
+            s.serialize_element(&b)?;
         }
         s.end()
     }
@@ -75,8 +75,8 @@ impl<'de> serde::de::Deserialize<'de> for Uint {
         impl<'de> serde::de::Visitor<'de> for UintVisitor {
             type Value = Uint;
 
-            fn expecting(&self, _formatter: &mut fmt::Formatter) -> fmt::Result {
-                unreachable!()
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                write!(formatter, "a BARE encoded variable-length integer")
             }
 
             fn visit_seq<A>(self, mut seq: A) -> std::result::Result<Self::Value, A::Error>
@@ -86,16 +86,28 @@ impl<'de> serde::de::Deserialize<'de> for Uint {
                 let mut x = 0u64;
                 let mut s = 0usize;
                 for i in 0.. {
-                    // SeqAccess::next_element should never return None
-                    let b = seq.next_element::<u8>()?.unwrap();
-                    if b < 0x80 {
+                    let b = seq.next_element::<u8>()?;
+                    if let Some(b) = b {
                         if i > 9 || i == 9 && b > 1 {
-                            todo!("error out");
+                            // No more than 10 bytes can be in a BARE uint/int
+                            return Err(serde::de::Error::custom(
+                                "continuation bit indicated an invalid variable-length integer",
+                            ));
                         }
-                        return Ok(Uint(x | (b as u64) << s));
+                        if b < 0x80 {
+                            // No continuation bit is set
+                            return Ok(Uint(x | (b as u64) << s));
+                        }
+                        x |= ((b & 0x7f) as u64) << s;
+                        s += 7;
+                    } else {
+                        // Since we're calling next_element for u8 it's probably impossible to
+                        // enter this branch without having raised an io::Error earlier, but better
+                        // to handle it anyway instead of introducing a potential panic
+                        return Err(serde::de::Error::custom(
+                            "expected further bytes in variable-length integer",
+                        ));
                     }
-                    x |= ((b & 0x7f) as u64) << s;
-                    s += 7;
                 }
                 unreachable!()
             }
@@ -169,10 +181,7 @@ mod test {
             (0, &[0]),
             (1, &[1]),
             (275, &[147, 2]),
-            (
-                18446744073709551615,
-                &[255, 255, 255, 255, 255, 255, 255, 255, 255, 1],
-            ),
+            (u64::MAX, &[255, 255, 255, 255, 255, 255, 255, 255, 255, 1]),
         ];
         for &(n, bytes) in CASES {
             println!("testing {}", n);
@@ -182,5 +191,25 @@ mod test {
             let got_int = from_slice::<Uint>(&got_bytes).unwrap();
             assert_eq!(got_int, int);
         }
+    }
+
+    #[test]
+    fn test_uint_too_long() {
+        // Too many bytes
+        let bytes: &'static [u8] = &[255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 1];
+        let result = from_slice::<Uint>(&bytes);
+        assert!(result.is_err());
+
+        // Too many bits of precision (effectively u64::MAX + 1)
+        let bytes: &'static [u8] = &[255, 255, 255, 255, 255, 255, 255, 255, 255, 2];
+        let result = from_slice::<Uint>(&bytes);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_uint_too_short() {
+        let bytes: &'static [u8] = &[255, 255, 255];
+        let result = from_slice::<Uint>(&bytes);
+        assert!(result.is_err());
     }
 }
