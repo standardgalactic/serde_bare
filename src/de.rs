@@ -291,6 +291,7 @@ where
         let Uint(length) = <Uint as de::Deserialize>::deserialize(&mut *self)?;
 
         struct Seq<'a, R>(&'a mut Deserializer<R>, u64);
+
         impl<'de, 'a, R> de::SeqAccess<'de> for Seq<'a, R>
         where
             R: Read,
@@ -309,6 +310,7 @@ where
                 }
             }
         }
+
         visitor.visit_seq(Seq::<'a, R>(self, length))
     }
 
@@ -319,6 +321,7 @@ where
         V: de::Visitor<'de>,
     {
         struct Seq<'a, R>(&'a mut Deserializer<R>, usize);
+
         impl<'de, 'a, R> de::SeqAccess<'de> for Seq<'a, R>
         where
             R: Read,
@@ -337,6 +340,7 @@ where
                 }
             }
         }
+
         visitor.visit_seq(Seq::<'a, R>(self, len))
     }
 
@@ -353,6 +357,7 @@ where
         V: de::Visitor<'de>,
     {
         struct Seq<'a, R>(&'a mut Deserializer<R>, usize);
+
         impl<'de, 'a, R> de::SeqAccess<'de> for Seq<'a, R>
         where
             R: Read,
@@ -371,6 +376,7 @@ where
                 }
             }
         }
+
         visitor.visit_seq(Seq::<'a, R>(self, len))
     }
 
@@ -382,6 +388,7 @@ where
         let Uint(length) = <Uint as de::Deserialize>::deserialize(&mut *self)?;
 
         struct Map<'a, R>(&'a mut Deserializer<R>, u64);
+
         impl<'de, 'a, R> de::MapAccess<'de> for Map<'a, R>
         where
             R: Read,
@@ -407,6 +414,7 @@ where
                 Ok(seed.deserialize(&mut *self.0)?)
             }
         }
+
         visitor.visit_map(Map::<'a, R>(self, length))
     }
 
@@ -421,6 +429,7 @@ where
         V: de::Visitor<'de>,
     {
         struct Seq<'a, R>(&'a mut Deserializer<R>);
+
         impl<'de, 'a, R> de::SeqAccess<'de> for Seq<'a, R>
         where
             R: Read,
@@ -433,6 +442,7 @@ where
                 Ok(Some(seed.deserialize(&mut *self.0)?))
             }
         }
+
         visitor.visit_seq(Seq::<'a, R>(self))
     }
 
@@ -446,6 +456,7 @@ where
         V: de::Visitor<'de>,
     {
         struct Enum<'a, R>(&'a mut Deserializer<R>);
+
         impl<'de, 'a, R> de::EnumAccess<'de> for Enum<'a, R>
         where
             R: Read,
@@ -501,6 +512,7 @@ where
                 de::Deserializer::deserialize_struct(self.0, "", fields, visitor)
             }
         }
+
         visitor.visit_enum(Enum::<'a, R>(self))
     }
 
