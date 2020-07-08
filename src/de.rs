@@ -7,29 +7,26 @@ use std::{
     str, u16, u32, u64, u8,
 };
 
-// We could use pagesize to get this across platforms, but 4K is a reasonable value
-const PAGESIZE: usize = 4096;
-
-pub struct Deserializer<R> {
-    reader: R,
-}
-
 /// Try and return a Vec<u8> of `len` bytes from a Reader
 #[inline]
 fn read_bytes<R: Read>(reader: R, len: usize) -> Result<Vec<u8>, std::io::Error> {
-    let capacity = if len > PAGESIZE { PAGESIZE } else { len };
-    // Allocate at most one page to start with. Growing a Vec is fairly efficient once you get out
+    // Allocate at most 4096 bytes to start with. Growing a Vec is fairly efficient once you get out
     // of the region of the first few hundred bytes.
-    let mut buffer: Vec<u8> = Vec::with_capacity(capacity);
+    let capacity = len.min(4096);
+    let mut buffer = Vec::with_capacity(capacity);
     let read = reader.take(len as u64).read_to_end(&mut buffer)?;
     if read < len {
         Err(std::io::Error::new(
             std::io::ErrorKind::UnexpectedEof,
-            "Unexpected EOF reading number of bytes expected in field prefix"
+            "Unexpected EOF reading number of bytes expected in field prefix",
         ))
     } else {
         Ok(buffer)
     }
+}
+
+pub struct Deserializer<R> {
+    reader: R,
 }
 
 impl<R> Deserializer<R> {
