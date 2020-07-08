@@ -516,12 +516,16 @@ where
         visitor.visit_enum(Enum::<'a, R>(self))
     }
 
-    /// Returns Error::IdentifierUnsupported.
-    fn deserialize_identifier<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
+    /// Deserialize the enum discriminant as a BARE Uint
+    fn deserialize_identifier<V>(self, visitor: V) -> Result<V::Value, Self::Error>
     where
         V: de::Visitor<'de>,
     {
-        Err(Error::IdentifierUnsupported)
+        let Uint(id) = <Uint as de::Deserialize>::deserialize(&mut *self)?;
+        let variant: u32 = id.try_into().map_err(|_| {
+            Error::Message("Enum identifiers larger than u32 are not supported".to_string())
+        })?;
+        visitor.visit_u32(variant)
     }
 
     /// Returns Error::AnyUnsupported.
