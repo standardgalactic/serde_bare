@@ -12,7 +12,6 @@ pub enum Error {
     Io(io::Error),
 
     AnyUnsupported,
-    IdentifierUnsupported,
 
     InvalidUtf8,
     InvalidChar,
@@ -38,7 +37,6 @@ impl Display for Error {
             Error::Message(msg) => formatter.write_str(msg),
             Error::Io(e) => e.fmt(formatter),
             Error::AnyUnsupported => formatter.write_str("BARE does not support any"),
-            Error::IdentifierUnsupported => formatter.write_str("BARE does not support identifier"),
             Error::InvalidUtf8 => formatter.write_str("invalid utf-8 in string"),
             Error::InvalidChar => formatter.write_str("invalid unicode codepoint in char"),
             Error::MapLengthRequired => formatter.write_str("map length required"),
