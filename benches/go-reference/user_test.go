@@ -2,9 +2,10 @@ package main
 
 import (
 	"bytes"
-	"git.sr.ht/~sircmpwn/go-bare"
 	"log"
 	"testing"
+
+	"git.sr.ht/~sircmpwn/go-bare"
 )
 
 type UserRole uint
