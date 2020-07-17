@@ -1,6 +1,6 @@
 # Provided so users not familiar with Go don't need to know the go bench invocation
 
-.PHONY: bench go-bench
+.PHONY: bench go-bench bench-all
 
 bench:
 	cargo bench
