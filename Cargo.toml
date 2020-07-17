@@ -8,6 +8,7 @@ description = "An implementation of the BARE (https://git.sr.ht/~sircmpwn/bare) 
 repository = "https://git.sr.ht/~tdeo/serde_bare"
 keywords = ["serde", "bare"]
 categories = ["encoding"]
+exclude = ["benches/go-reference"]
 
 [dependencies]
 serde = "1.0"
