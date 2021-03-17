@@ -176,12 +176,11 @@ where
         value.serialize(self)
     }
 
-    /// BARE type if len is None: []type
-    /// BARE type if len is Some: \[len\]type
+    /// BARE type if len is Some: []type
+    /// BARE type \[len\]type is never used for variable-length sequences
+    /// Error::SequenceLengthRequired if len is None
     fn serialize_seq(self, len: Option<usize>) -> Result<Self::SerializeSeq, Self::Error> {
-        if let Some(len) = len {
-            Uint(len as u64).serialize(&mut *self)?;
-        }
+        Uint(len.ok_or(Error::SequenceLengthRequired)? as u64).serialize(&mut *self)?;
         Ok(self)
     }
 
@@ -414,4 +413,24 @@ where
     let mut serializer = Serializer { writer };
     value.serialize(&mut serializer)?;
     Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn test_unbounded_sequence() {
+        use serde::Serializer;
+        let seq = [1, 2, 3];
+        let vec = Vec::<u8>::new();
+        let mut serializer = super::Serializer::new(vec);
+        assert!(serializer
+            .collect_seq(seq.iter().filter_map(|x| {
+                if x % 2 == 0 {
+                    Some(x)
+                } else {
+                    None
+                }
+            }))
+            .is_err());
+    }
 }
