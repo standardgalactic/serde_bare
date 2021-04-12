@@ -3,6 +3,7 @@ serde_bare
 An implementation of the BARE (https://baremessages.org) encoding format draft.
 
 Mailing list: https://lists.sr.ht/~tdeo/serde_bare
+Ticket tracker: https://todo.sr.ht/~tdeo/serde_bare
 
 To run benchmarks on your system:
 
