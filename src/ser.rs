@@ -79,7 +79,7 @@ where
     }
 
     serde::serde_if_integer128! {
-        /// BARE type: data<16>
+        /// BARE type: data\<16\>
         fn serialize_u128(self, v: u128) -> Result<Self::Ok, Self::Error> {
             self.writer.write_all(&v.to_le_bytes()).map_err(Error::Io)
         }

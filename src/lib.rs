@@ -1,22 +1,85 @@
 #![forbid(unsafe_code)]
 //! # serde_bare
-//! An implementation of the BARE (https://git.sr.ht/~sircmpwn/bare) encoding format draft.
 //!
-//! ## `u8`/`u16`/`u32`/`u64`, `i8`/`i16`/`i32`/`i64`, `f32`/`f64`, `bool`, `string`, `data`, `optional<type>`, `[]type`, `map`, and `struct`
-//! Mapped exactly.
+//! An implementation of the BARE (https://baremessages.org) encoding format draft.
 //!
-//! ## `u128`, `i128`
-//! Encoded in the same fashion as the other integers, but the type is data<16>.
+//! ## Mapping from the Serde data model
 //!
-//! ## `uint`, `int`, `enum`
-//! [Uint] and [Int] types wrap a u64/i64 for these types. Uint can be used for `enum`.
+//! ### `bool`, `i8` through `i64`, `u8` through `u64`, `f32`, `f64`, `string`
 //!
-//! ## `[length]type`, `data<length>`
-//! `[T; N]`.
+//! Serialize as the BARE types of the same name.
 //!
-//! ## `(type | type | ...)`
-//! Rust enums, with or without fields are represented as tagged unions in BARE.
-//! If the enum has no fields, it can be represented as an integer with `serde_repr`.
+//! ### `i128`, `u128`
+//!
+//! Serialize as `data<16>`.
+//!
+//! ### `char`
+//!
+//! Serializes as `u32`.
+//!
+//! ### `byte array`
+//!
+//! Serializes as `data`.
+//!
+//! ### `option`
+//!
+//! Serializes as `optional<type>`
+//!
+//! ### `seq`
+//!
+//! Serializes as `[]type`.
+//! Sequences with unknown lengths are not representable in BARE.
+//!
+//! ### `map`
+//!
+//! Serializes as `map[type]type`.
+//!
+//! ### `unit`
+//!
+//! Serializes as `void`.
+//!
+//! ### `unit_struct`
+//!
+//! Serializes as `void`.
+//! The container name is ignored.
+//!
+//! ### `unit_variant`
+//!
+//! Serialized as the variant index as a `uint` followed by the variant data.
+//! The container name and variant name are ignored.
+//!
+//! ### `newtype_struct`
+//!
+//! Serialized the same as the contained type.
+//! The container name is ignored.
+//!
+//! ### `newtype_variant`
+//!
+//! Serialized as the variant index as a `uint` followed by the variant data.
+//! The container name and variant name are ignored.
+//!
+//! ### `tuple`
+//!
+//! Serialized as `struct`.
+//!
+//! ### `tuple_struct`
+//!
+//! Serialized as `struct`.
+//! The container name is ignored.
+//!
+//! ### `tuple_variant`
+//!
+//! Serialized as the variant index as a `uint` followed by the variant data.
+//! The container name and variant name are ignored.
+//!
+//! ### `struct`
+//!
+//! Serialized as `struct`.
+//!
+//! ### `struct_variant`
+//!
+//! Serialized as a `uint` followed by the variant data.
+//! The container name and variant name are ignored.
 
 pub mod de;
 pub mod error;
