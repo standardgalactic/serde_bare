@@ -1,10 +1,12 @@
 use serde::{de, ser};
-use std::{
-    fmt::{self, Display},
+use core::fmt::{self, Debug, Display};
+use crate::compat::{
+    error,
     io,
+    string::{String, ToString}
 };
 
-pub type Result<T> = std::result::Result<T, Error>;
+pub type Result<T> = core::result::Result<T, Error>;
 
 #[derive(Debug)]
 pub enum Error {
@@ -36,7 +38,7 @@ impl Display for Error {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Error::Message(msg) => formatter.write_str(msg),
-            Error::Io(e) => e.fmt(formatter),
+            Error::Io(e) => Debug::fmt(&e, formatter),
             Error::AnyUnsupported => formatter.write_str("BARE does not support any"),
             Error::InvalidUtf8 => formatter.write_str("invalid utf-8 in string"),
             Error::InvalidChar => formatter.write_str("invalid unicode codepoint in char"),
@@ -46,4 +48,4 @@ impl Display for Error {
     }
 }
 
-impl std::error::Error for Error {}
+impl error::Error for Error {}

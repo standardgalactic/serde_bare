@@ -1,6 +1,9 @@
 use crate::{error::Error, Uint};
 use serde::{ser, Serialize};
-use std::io::Write;
+use crate::compat::{
+    io::Write,
+    vec::Vec
+};
 
 pub struct Serializer<W> {
     writer: W,
@@ -419,6 +422,7 @@ where
 mod test {
     #[test]
     fn test_unbounded_sequence() {
+        use crate::compat::vec::Vec;
         use serde::Serializer;
         let seq = [1, 2, 3];
         let vec = Vec::<u8>::new();

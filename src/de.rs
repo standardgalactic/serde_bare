@@ -1,23 +1,28 @@
 use crate::{error::Error, Uint};
 use serde::de;
-use std::{
+use core::{
     convert::TryInto,
     i16, i32, i64, i8,
-    io::{Cursor, Read},
     str, u16, u32, u64, u8,
+};
+use crate::compat::{
+    io::{self, Cursor, Read},
+    string::{String, ToString},
+    vec::Vec,
 };
 
 /// Try and return a Vec<u8> of `len` bytes from a Reader
+#[cfg(any(feature = "std", feature = "alloc"))]
 #[inline]
-fn read_bytes<R: Read>(reader: R, len: usize) -> Result<Vec<u8>, std::io::Error> {
+fn read_bytes<R: Read>(reader: R, len: usize) -> Result<Vec<u8>, io::Error> {
     // Allocate at most 4096 bytes to start with. Growing a Vec is fairly efficient once you get out
     // of the region of the first few hundred bytes.
     let capacity = len.min(4096);
     let mut buffer = Vec::with_capacity(capacity);
     let read = reader.take(len as u64).read_to_end(&mut buffer)?;
     if read < len {
-        Err(std::io::Error::new(
-            std::io::ErrorKind::UnexpectedEof,
+        Err(io::Error::new(
+            io::ErrorKind::UnexpectedEof,
             "Unexpected EOF reading number of bytes expected in field prefix",
         ))
     } else {
@@ -655,6 +660,7 @@ mod test {
 
     #[test]
     fn test_slice() {
+        use crate::compat::boxed::Box;
         assert_eq!(
             &[0u8; 4][..],
             &*from_slice::<Box<[u8]>>(&[4, 0, 0, 0, 0]).unwrap()

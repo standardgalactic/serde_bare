@@ -81,6 +81,18 @@
 //! Serialized as a `uint` followed by the variant data.
 //! The container name and variant name are ignored.
 
+#![cfg_attr(not(feature = "std"), no_std)]
+
+#[cfg(not(feature = "std"))]
+#[macro_use]
+extern crate core;
+
+#[cfg(feature = "alloc")]
+#[allow(unused_imports)]
+#[macro_use]
+extern crate alloc;
+
+mod compat;
 pub mod de;
 pub mod error;
 pub mod ser;
@@ -102,7 +114,7 @@ impl Default for Uint {
 }
 
 impl serde::ser::Serialize for Uint {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
     where
         S: serde::ser::Serializer,
     {
@@ -128,11 +140,11 @@ impl serde::ser::Serialize for Uint {
 }
 
 impl<'de> serde::de::Deserialize<'de> for Uint {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
     where
         D: serde::de::Deserializer<'de>,
     {
-        use std::fmt;
+        use core::fmt;
 
         struct UintVisitor;
         impl<'de> serde::de::Visitor<'de> for UintVisitor {
@@ -142,7 +154,7 @@ impl<'de> serde::de::Deserialize<'de> for Uint {
                 write!(formatter, "a BARE encoded variable-length integer")
             }
 
-            fn visit_seq<A>(self, mut seq: A) -> std::result::Result<Self::Value, A::Error>
+            fn visit_seq<A>(self, mut seq: A) -> core::result::Result<Self::Value, A::Error>
             where
                 A: serde::de::SeqAccess<'de>,
             {
@@ -189,7 +201,7 @@ impl Default for Int {
 }
 
 impl serde::ser::Serialize for Int {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
     where
         S: serde::ser::Serializer,
     {
@@ -203,7 +215,7 @@ impl serde::ser::Serialize for Int {
 }
 
 impl<'de> serde::de::Deserialize<'de> for Int {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
     where
         D: serde::de::Deserializer<'de>,
     {
@@ -229,6 +241,7 @@ mod test {
             (i64::MAX, &[254, 255, 255, 255, 255, 255, 255, 255, 255, 1]),
         ];
         for &(n, bytes) in CASES {
+            #[cfg(feature = "std")]
             println!("testing {}", n);
             let int = Int(n);
             let got_bytes = to_vec(&int).unwrap();
@@ -247,6 +260,7 @@ mod test {
             (u64::MAX, &[255, 255, 255, 255, 255, 255, 255, 255, 255, 1]),
         ];
         for &(n, bytes) in CASES {
+            #[cfg(feature = "std")]
             println!("testing {}", n);
             let int = Uint(n);
             let got_bytes = to_vec(&int).unwrap();
